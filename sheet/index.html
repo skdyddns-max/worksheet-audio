@@ -1,0 +1,20 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>학습지 듣기</title>
+<style>
+body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",sans-serif;background:#F6FBF8;color:#1F2A24;margin:0;padding:22px 18px}
+.card{background:#fff;border:1.5px solid #CFE6D8;border-radius:16px;padding:18px;max-width:520px;margin:0 auto 14px}
+h1{font-size:18px;margin:0 0 4px;color:#1F4D3A}h2{font-size:15px;margin:0 0 8px}small{color:#6B7A72}audio{width:100%;margin-top:10px}
+.brand{text-align:center;color:#6B7A72;font-size:12px;margin-top:18px}.err{color:#B4432F}
+</style></head><body>
+<div class="card"><h1 id="h">🔊 학습지 전체 듣기</h1><small id="g">문제마다 재생을 눌러요.</small><p class="err" id="e"></p></div>
+<div id="list"></div>
+<div class="brand">용디쌤 · TalkBloom 언어학습지</div>
+<script>
+const s=new URLSearchParams(location.search).get('s')||'';
+const esc=t=>String(t||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
+if(!/^[\w\-]{3,40}$/.test(s)){document.getElementById('e').textContent='잘못된 주소예요.';}
+else fetch('../sheets/'+s+'.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{
+  if(d.grade)document.getElementById('g').textContent=d.grade+' · 문제마다 재생을 눌러요.';
+  document.getElementById('list').innerHTML=(d.clips||[]).map(c=>`<div class="card"><h2>${c.no}번 · ${esc(c.tag)}</h2><audio controls preload="none" src="../clips/${c.clip}.mp3"></audio></div>`).join('');
+}).catch(()=>{document.getElementById('e').textContent='아직 목록이 올라오지 않았어요. 잠시 뒤 다시 열어 주세요.';});
+</script></body></html>

@@ -1,0 +1,21 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>문제 듣기</title>
+<style>
+body{font-family:-apple-system,"Apple SD Gothic Neo","Pretendard",sans-serif;background:#F6FBF8;color:#1F2A24;margin:0;padding:22px 18px}
+.card{background:#fff;border:1.5px solid #CFE6D8;border-radius:16px;padding:18px;max-width:520px;margin:0 auto 14px}
+h1{font-size:18px;margin:0 0 4px;color:#1F4D3A}small{color:#6B7A72}audio{width:100%;margin-top:10px}
+.btn{display:block;width:100%;padding:16px;border:0;border-radius:12px;background:#2E7D5B;color:#fff;font-size:18px;font-weight:700;margin-top:12px}
+details{margin-top:10px;font-size:14px;color:#3C4A43}.brand{text-align:center;color:#6B7A72;font-size:12px;margin-top:18px}.err{color:#B4432F}
+</style></head><body>
+<div class="card"><h1>🔊 문제 듣기</h1><small>재생을 누르면 문제를 읽어 줘요. 다시 듣기는 재생을 한 번 더.</small>
+<audio id="a" controls preload="auto"></audio>
+<button class="btn" onclick="var a=document.getElementById('a');a.currentTime=0;a.play();">▶ 다시 듣기</button>
+<details><summary>대본 보기(어른용)</summary><p id="t">불러오는 중…</p></details><p class="err" id="e"></p></div>
+<div class="brand">용디쌤 · TalkBloom 언어학습지</div>
+<script>
+const c=new URLSearchParams(location.search).get('c')||'';
+if(!/^[0-9a-f]{8,32}$/.test(c)){document.getElementById('e').textContent='잘못된 주소예요.';}
+else{document.getElementById('a').src='../clips/'+c+'.mp3';
+fetch('../clips/'+c+'.json').then(r=>r.ok?r.json():null).then(d=>{document.getElementById('t').textContent=d?d.text:'(대본 없음)';}).catch(()=>{document.getElementById('t').textContent='(대본 없음)';});
+document.getElementById('a').onerror=()=>{document.getElementById('e').textContent='아직 음성이 올라오지 않았어요. 잠시 뒤 다시 열어 주세요.';};}
+</script></body></html>
