@@ -14,8 +14,23 @@ details{margin-top:10px;font-size:14px;color:#3C4A43}.brand{text-align:center;co
 <div class="brand">용디쌤 · TalkBloom 언어학습지</div>
 <script>
 const c=new URLSearchParams(location.search).get('c')||'';
-if(!/^[0-9a-f]{8,32}$/.test(c)){document.getElementById('e').textContent='잘못된 주소예요.';}
-else{document.getElementById('a').src='../clips/'+c+'.mp3';
-fetch('../clips/'+c+'.json').then(r=>r.ok?r.json():null).then(d=>{document.getElementById('t').textContent=d?d.text:'(대본 없음)';}).catch(()=>{document.getElementById('t').textContent='(대본 없음)';});
-document.getElementById('a').onerror=()=>{document.getElementById('e').textContent='아직 음성이 올라오지 않았어요. 잠시 뒤 다시 열어 주세요.';};}
+const A=document.getElementById('a'),E=document.getElementById('e'),T=document.getElementById('t');
+const MAX=40, WAIT=5000; let tries=0, ready=false;
+if(!/^[0-9a-f]{8,32}$/.test(c)){E.textContent='잘못된 주소예요.';}
+else{
+  // 방금 만든 학습지는 공개 사이트에 올라가기까지 1분쯤 걸린다 → 실패하면 캐시를 피해 5초마다 다시 부른다(최대 약 3분)
+  const load=()=>{A.src='../clips/'+c+'.mp3'+(tries?('?t='+Date.now()):'');A.load();};
+  A.addEventListener('canplay',()=>{ready=true;E.textContent='';});
+  A.onerror=()=>{
+    if(ready)return;
+    tries++;
+    if(tries>MAX){E.textContent='음성을 불러오지 못했어요. 인터넷 연결을 확인하고 다시 열어 주세요.';return;}
+    E.textContent='음성을 준비하고 있어요… 잠시만 기다려 주세요 ('+(tries*5)+'초)';
+    setTimeout(load,WAIT);
+  };
+  const script=n=>fetch('../clips/'+c+'.json'+(n?('?t='+Date.now()):'')).then(r=>{if(!r.ok)throw 0;return r.json();})
+    .then(d=>{T.textContent=(d&&d.text)||'(대본 없음)';})
+    .catch(()=>{if(n<MAX)setTimeout(()=>script(n+1),WAIT);else T.textContent='(대본 없음)';});
+  load();script(0);
+}
 </script></body></html>
